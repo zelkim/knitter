@@ -127,13 +127,17 @@ def _build(base_dist_dir: Path = Path('dist'), mode: str = 'production'):
         target_path.parent.mkdir(exist_ok=True, parents=True)
 
         # Preprocess via SASS.
-        try:
-            executable: str = 'sass'
-            if sys.platform.startswith('win32'):
-                executable: str = 'sass.bat'
+        executable_candidates: list[str] = ['sass']
+        if sys.platform.startswith('win32'):
+            executable_candidates.append('sass.bat')
 
-            subprocess.run([executable, src_file, target_path])
-        except FileNotFoundError as e:
+        for executable in executable_candidates:
+            try:
+                subprocess.run([executable, src_file, target_path])
+                break
+            except FileNotFoundError:
+                continue
+        else:
             err_msg: str = ('sass not found. Make sure Sass is '
                             'installed and in your PATH. Build cancelled')
             raise BuildException(err_msg)
