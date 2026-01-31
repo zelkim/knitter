@@ -1,14 +1,27 @@
+# The folder where all static assets are stored that wlll
+# be distributed. The folder contents will be copied into
+# an 'assets' folder in dist/.
 [assets_folder]
 folder = 'assets/'
 
+# Processed files are files that are processed from a source file,
+# such as an SCSS file. The processed filename should be a path
+# relative to the assets folder in dist/. The source file should
+# be relative to Knitter. For now, we only support processing SCSS
+# files into CSS files.
 [processed_files]
 'css/main.css' = 'src/scss/main.scss'
 
+# Routes that we can access in the URL. Paths are
+# relative to Knitter.
 [routes]
 '/' = 'pages/index.html'
 '/about' = 'pages/about.html'
 "/tagalog" = 'pages/index_tl.html'
 "/waray" = 'pages/index_wry.html'
 
+# JSON data that will be loaded into the template engine.
+# The key will be used as the name that is accessible from the templates,
+# and the value will be the source file.
 [data]
 'landing_locales' = 'data/landing-locales.json'
