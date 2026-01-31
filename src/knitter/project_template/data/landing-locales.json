@@ -1,0 +1,23 @@
+{
+  "en": {
+    "btn_text": "English",
+    "btn_href": "/",
+    "subtitle": "Build. Stitch. Ship.",
+    "get_started": "Get Started",
+    "body": "Knitter is a small static site generator that weaves together templates, data, and styles into fast, predictable websites. Using Jinja, SCSS, and JSON with a simple TOML config, it keeps your build process transparent and easy to reason about. Perfect for projects that do not need a full framework. Create static webpages without clutter, simple and straight to the point."
+  },
+  "tl": {
+    "btn_text": "Tagalog",
+    "btn_href": "/tagalog",
+    "get_started": "Simulan na natin 'to",
+    "subtitle": "Na para bang nagtatahi lang.",
+    "body": "Ang Knitter ay isang magaan na static site generator na nagpapadali ipagsama ang mga template, data, at styles para makagawa ng mabilis at madaling i-predict na mga website. Gumagamit ito ng Jinja, SCSS, at JSON kasama ang isang TOML config para malinaw kung ano ang nangyayari sa build. Para ito sa mga proyekto na hindi kailangan ng buong framework. Gumawa ng static webpages na walang kalat, simple at diretso sa punto."
+  },
+  "wry": {
+    "btn_text": "Waray",
+    "btn_href": "/waray",
+    "get_started": "Tikangan ta na ini!",
+    "subtitle": "Baga ka la hit nag-gagantsilyo.",
+    "body": "Knitter—usa nga static site generator nga nagbubulig urusahon an mga template, data, ngan design basi madali makahimo hin malaksi ngan simple nga mga website. Nagamit ini hin Jinja, SCSS, ngan JSON, nga pwede diktahon gamit hin usa nga TOML config para mas-klaro an preseso han pag-build. Angay ini para ha mga proyekto nga diri kinahanglan nga komplikado duro. Makakaghimo ka hin mga websites nga waray sarang, simple la, ngan durudiretso."
+  }
+}

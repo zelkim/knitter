@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Knitter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    {% if current_lang is not defined %}
+    {% set current_lang = 'en' %}
+    {% endif %}
+    {% set entry = landing_locales[current_lang] %}
+
+    <main>
+        <section class="landing">
+            <h1 class="landing__title">Knitter</h1>
+            <p id="subtitle" class="landing__subtitle">{{ entry.subtitle }}</p>
+            <p id="description" class="landing__body">{{ entry.body }}</p>
+
+            <div class="landing__buttons">
+                <a class="btn btn--primary" href="/about">
+                    <img src="/assets/rocket.svg" alt="Get started" class="btn__icon" height="20">
+                    <span>{{ entry.get_started }}</span>
+                </a>
+                <a class="btn btn--ghost" href="https://github.com/dev8community/knitter" target="_blank"
+                    rel="noreferrer">
+                    <img src="/assets/github.svg" alt="GitHub" class="btn__icon" height="20">
+                    <span>Contribute</span>
+                </a>
+            </div>
+
+            <div class="landing__lang-switcher">
+                <img src="/assets/lang.svg" alt="Language" class="landing__lang-icon">
+                <div class="landing__lang-links">
+                    {% for code, locale in landing_locales.items() %}
+                    <a href="{{ locale.btn_href }}" class="lang-link{% if code == current_lang %} lang-link--active{% endif %}">
+                        {{ locale.btn_text }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="landing__footer">
+        <span>Made with &lt;3 by the </span>
+        <a href="https://github.com/dev8community/" target="_blank" rel="noreferrer">Dev8 Community</a>
+        <img src="/assets/logo-with-text.png" alt="Dev8 Community logo" class="landing__footer-logo">
+    </footer>
+</body>
+
+</html>
