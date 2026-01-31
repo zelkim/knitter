@@ -36,31 +36,45 @@ jinja_env: jinja2.Environment = jinja2.Environment(
 jinja_env.tests['dict'] = is_dict
 jinja_env.tests['list'] = is_list
 
-# Load TOML config file.
-with open('knitter.toml', 'rb') as f:
-    config_data: dict[str, Any] = tomllib.load(f)
+def _load_config_and_data() -> tuple[dict[str, Any], dict[str, Any]]:
+    """Load knitter.toml and associated JSON data files.
 
-loaded_data: dict[str, any] = {}
-for name, data in config_data['data'].items():
-    with open(data, encoding='utf-8') as f:
-        loaded_data[name] = json.load(f)
+    This is intentionally lazy so that commands like `knitter init` can run
+    in a directory that does not yet have a configuration file.
+    """
 
-        is_data_table: bool = ('headings' in loaded_data[name] and
-                               ('rows' in loaded_data[name]['headings'] and
-                                'columns' in loaded_data[name]['headings']))
-        if is_data_table:
-            if 'focused_data_columns' in loaded_data[name]:
-                data_list: list = []
-                for row in loaded_data[name]['data']:
-                    for i, col in enumerate(row):
-                        # Since the first element is the first column.
-                        idx = i + 1
-                        if idx in loaded_data[name]['focused_data_columns']:
-                            data_list.append(col)
-            else:
-                data_list: list = sum(loaded_data[name]['data'], start=[])
+    with open('knitter.toml', 'rb') as f:
+        config_data: dict[str, Any] = tomllib.load(f)
 
-            loaded_data[name]['max_data_val'] = max(data_list)
+    loaded_data: dict[str, Any] = {}
+
+    data_config: dict[str, Any] = config_data.get('data', {})
+    for name, data in data_config.items():
+        with open(data, encoding='utf-8') as f:
+            loaded_data[name] = json.load(f)
+
+            is_data_table: bool = (
+                'headings' in loaded_data[name]
+                and (
+                    'rows' in loaded_data[name]['headings']
+                    and 'columns' in loaded_data[name]['headings']
+                )
+            )
+            if is_data_table:
+                if 'focused_data_columns' in loaded_data[name]:
+                    data_list: list = []
+                    for row in loaded_data[name]['data']:
+                        for i, col in enumerate(row):
+                            # Since the first element is the first column.
+                            idx = i + 1
+                            if idx in loaded_data[name]['focused_data_columns']:
+                                data_list.append(col)
+                else:
+                    data_list: list = sum(loaded_data[name]['data'], start=[])
+
+                loaded_data[name]['max_data_val'] = max(data_list)
+
+    return config_data, loaded_data
 
 
 class BuildException(Exception):
@@ -71,7 +85,8 @@ def _create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog='Knitter',
         description='A static site generator originally built for use in the development of the Dev8 website.')
-    parser.add_argument('task', choices=['build', 'serve'])
+    parser.add_argument('task', choices=['build', 'serve', 'init'])
+    parser.add_argument('directory', nargs='?', help='Target directory for init (e.g., "." or "my-website").')
 
     return parser
 
@@ -103,6 +118,8 @@ def _setup_logger(name: str):
 
 
 def _build(base_dist_dir: Path = Path('dist'), mode: str = 'production'):
+    config_data, loaded_data = _load_config_and_data()
+
     os.makedirs(base_dist_dir, exist_ok=True)
 
     # Set up routes.
@@ -153,6 +170,8 @@ def _build(base_dist_dir: Path = Path('dist'), mode: str = 'production'):
 
 
 def _serve(base_dist_dir: Path = Path('dist')):
+    config_data, _ = _load_config_and_data()
+
     logger: logging.Logger = logging.getLogger('knitter')
 
     try:
@@ -205,6 +224,48 @@ def _serve(base_dist_dir: Path = Path('dist')):
     server.serve(host=host, port=port, root=root)
 
 
+def _init(base_dir: Path):
+    """Initialize a new Knitter project in the given directory.
+
+    This will create a basic directory structure, a knitter.toml file,
+    starter templates, styles, JavaScript, and a locale JSON file used by
+    the default landing page.
+    """
+
+    logger: logging.Logger = logging.getLogger('knitter')
+
+    config_path: Path = base_dir / 'knitter.toml'
+    if config_path.exists():
+        logger.error('knitter.toml already exists. Aborting init to avoid overwriting your configuration.')
+        raise SystemExit(1)
+
+    # Determine where the starter template lives inside this package.
+    template_root: Path = Path(__file__).resolve().parent / 'project_template'
+    if not template_root.exists():
+        logger.error('Project template directory not found inside Knitter package.')
+        raise SystemExit(1)
+
+    # Copy all files from the template into the target directory, without
+    # overwriting any existing files.
+    for dirpath, dirnames, filenames in os.walk(template_root):
+        source_dir: Path = Path(dirpath)
+        relative_dir: Path = source_dir.relative_to(template_root)
+        target_dir: Path = base_dir / relative_dir
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        for filename in filenames:
+            src_path: Path = source_dir / filename
+            dest_path: Path = target_dir / filename
+
+            if dest_path.exists():
+                logger.info(f'Skipping existing file: {dest_path}')
+                continue
+
+            shutil.copy2(src_path, dest_path)
+
+    logger.info(f'Initialized a new Knitter project in: {base_dir.resolve()}')
+
+
 def _find_scss_imports(starting_file: Path) -> set[Path]:
     imported_files: set[Path] = set()
     with open(starting_file, encoding='utf-8') as f:
@@ -236,3 +297,12 @@ def main():
             sys.exit(127)
     elif args.task == 'serve':
         _serve()
+    elif args.task == 'init':
+        target_dir_arg = getattr(args, 'directory', None)
+
+        if not target_dir_arg:
+            logger.error('No directory specified. \nUsage: knitter init <directory> (e.g., "knitter init my-website" or "knitter init .").')
+            sys.exit(2)
+
+        base_dir = Path(target_dir_arg)
+        _init(base_dir)

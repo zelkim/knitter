@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About Knitter</title>
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <main>
+        <section class="page">
+            <h1>What is Knitter?</h1>
+            <p>
+                Knitter is a lightweight, Python-based static site generator designed to make building content-driven
+                websites simple and transparent. Originally created to power the Dev8 community’s 2023 survey results
+                page, it uses a minimal TOML configuration to define your site’s routes, asset processing, and data
+                sources. Knitter stitches together Jinja2 templates, JSON data, and SCSS into ready-to-deploy static
+                HTML, letting you focus on writing templates and content instead of build scripts.
+            </p>
+            <p>
+                With two intuitive commands — <code>knitter build</code> to generate your <code>dist/</code> deployable
+                site and <code>knitter serve</code> to run a live-reloading development server — Knitter streamlines
+                both development and production workflows. SCSS files are compiled via an external Dart Sass executable,
+                and CSS is optionally minified for production, while static assets from your defined assets folder are
+                copied straight through into the final build.
+            </p>
+            <p>
+                The heart of every Knitter project is <code>knitter.toml</code>, where you tell it where to find your
+                assets, how to process source files, what URL routes to generate, and which JSON datasets to make
+                available to your templates. This keeps projects readable and portable across environments without
+                hidden convention logic.
+            </p>
+        </section>
+    </main>
+</body>
+</html>
