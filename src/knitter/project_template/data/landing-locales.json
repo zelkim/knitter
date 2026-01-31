@@ -10,7 +10,7 @@
     "btn_text": "Tagalog",
     "btn_href": "/tagalog",
     "get_started": "Simulan na natin 'to",
-    "subtitle": "Na para bang nagtatahi lang.",
+    "subtitle": "Na para bang nag-gagantsilyo lang.",
     "body": "Ang Knitter ay isang magaan na static site generator na nagpapadali ipagsama ang mga template, data, at styles para makagawa ng mabilis at madaling i-predict na mga website. Gumagamit ito ng Jinja, SCSS, at JSON kasama ang isang TOML config para malinaw kung ano ang nangyayari sa build. Para ito sa mga proyekto na hindi kailangan ng buong framework. Gumawa ng static webpages na walang kalat, simple at diretso sa punto."
   },
   "wry": {
