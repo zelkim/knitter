@@ -73,6 +73,12 @@ def _create_parser() -> argparse.ArgumentParser:
         description='A static site generator originally built for use in the development of the Dev8 website.')
     parser.add_argument('task', choices=['build', 'serve'])
 
+    parser.add_argument(
+        '--port',
+        type=int,
+        default=2016,
+        help='Port to serve on (default: 2016).')
+
     return parser
 
 
@@ -152,7 +158,7 @@ def _build(base_dist_dir: Path = Path('dist'), mode: str = 'production'):
     shutil.copytree(src_assets_dir, assets_dir, dirs_exist_ok=True)
 
 
-def _serve(base_dist_dir: Path = Path('dist')):
+def _serve(base_dist_dir: Path = Path('dist'), port: int = 2016):
     logger: logging.Logger = logging.getLogger('knitter')
 
     try:
@@ -198,7 +204,6 @@ def _serve(base_dist_dir: Path = Path('dist')):
         server.watch(path, build, delay=delay)
 
     host: str = 'localhost'
-    port: int = 2016
     root: str = 'dist/'
 
     logger.info(f'Starting server at http://{host}:{port}...')
@@ -235,4 +240,4 @@ def main():
             logger.error(f'{str(e)}.')
             sys.exit(127)
     elif args.task == 'serve':
-        _serve()
+        _serve(port=args.port)
